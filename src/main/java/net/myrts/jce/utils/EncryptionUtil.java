@@ -2,6 +2,7 @@ package net.myrts.jce.utils;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.mindrot.jbcrypt.BCrypt;
 
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
@@ -12,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.InvalidParameterSpecException;
+import java.util.Arrays;
 import java.util.Base64;
 
 /**
@@ -64,7 +66,17 @@ public class EncryptionUtil {
         return new EncryptionResult(Base64.getEncoder().encodeToString(encryptedTextBytes), 
                 Base64.getEncoder().encodeToString(ivBytes));
     }
-
+    
+    public static String encryptBCrypt(String content, String salt) throws DecoderException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, InvalidParameterSpecException {
+        // Hash a password for the first time
+        return BCrypt.hashpw(content, salt);
+    }
+    
+    public static String generateBCryptSalt(int log2Rounds) throws DecoderException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, InvalidParameterSpecException {
+        // Hash a password for the first time
+        return BCrypt.gensalt(log2Rounds);
+    }
+    
     public static String decryptAES256ECB(char[] encryptedText, char[] secretKey) throws Exception {
         byte[] encryptedTextBytes = Base64.getDecoder().decode(new String(encryptedText));
         SecretKeySpec secretSpec = new SecretKeySpec(Hex.decodeHex(secretKey), AES_KEY_TYPE);
